@@ -41,18 +41,53 @@ const shapeScore = {
   "Y": 2,
   "Z": 3
 }
-function score(game: Game): number {
+function score_part1(game: Game): number {
   return outcome(game) + shapeScore[game[1]];
 }
 
 function part1(inputPath: string) {
   const input = readFileSync(inputPath, 'utf8');
   const games = input.split('\n').filter(g => g).map(toGame);
-  return _.sum(games.map(score));
+  return _.sum(games.map(score_part1));
+}
+
+const shapeForLosing = {
+  "A": "Z",
+  "B": "X",
+  "C": "Y"
+}
+
+const shapeForWinning = {
+  "A": "Y",
+  "B": "Z",
+  "C": "X"
+}
+
+const shapeForDraw = {
+  "A": "X",
+  "B": "Y",
+  "C": "Z"
+}
+
+function whatToPlay(opponent: Opponent, indication: Me): Me {
+  if(indication === "X") // lose
+  return toMe(shapeForLosing[opponent]);
+  if(indication === "Y") // draw
+  return toMe(shapeForDraw[opponent]);
+  if (indication === "Z") // win
+  return toMe(shapeForWinning[opponent]);
+  throw `Invalid indication: ${indication}`;
+}
+
+function score_part2(game: Game): number {
+  const expectedGame = [game[0], ]
+  return score_part1([game[0], whatToPlay(game[0], game[1])]);
 }
 
 function part2(inputPath: string) {
-  return "not implemented";
+  const input = readFileSync(inputPath, 'utf8');
+  const games = input.split('\n').filter(g => g).map(toGame);
+  return _.sum(games.map(score_part2));
 }
 
 console.log("Part 1 for example: ", part1('input/example.txt'));
